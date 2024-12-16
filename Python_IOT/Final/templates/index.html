@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature and Humidity Dashboard</title>
+    <!-- Link to External CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <h1>DHTSENS</h1>
+        <div>
+            <a href="/">Home</a>&ensp;
+            <a href="/list">List</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header>
+        <h1>Temperature and Humidity Monitoring</h1>
+        <p>Real-time data updates</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content">
+        <h2>Latest Sensor Readings</h2>
+        <div class="data-section">
+            <div class="data-box">
+                <h3>Temperature</h3>
+                <p id="temperature">{{ data['temperature'] }} °C</p>
+            </div>
+            <div class="data-box">
+                <h3>Humidity</h3>
+                <p id="humidity">{{ data['humidity'] }} %</p>
+            </div>
+        </div>
+        <button onclick="downloadFile()">Download Readings</button>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 IoT Dashboard | All Rights Reserved</p>
+    </footer>
+
+    <!-- JavaScript for Real-Time Updates -->
+    <script>
+        // Function to fetch the latest readings from the server and update the page
+        function updateReadings() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('temperature').textContent = data.temperature + " °C";
+                    document.getElementById('humidity').textContent = data.humidity + " %";
+                })
+                .catch(error => console.error("Error updating readings:", error));
+        }
+
+        // Call updateReadings every 5 seconds for real-time updates
+        setInterval(updateReadings, 5000);
+        
+        function downloadFile() {
+            window.location.href = '/download';
+        }
+    </script>
+</body>
+
+</html>

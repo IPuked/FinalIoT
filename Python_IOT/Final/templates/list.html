@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='list.css') }}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <h1>DHTSENS</h1>
+        <div>
+            <a href="/">Home</a>&ensp;
+            <a href="/list">List</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="main-header">
+        <h1>Sensor Data Dashboard</h1>
+        <p>Real-time log of temperature and humidity readings</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="data-log">
+        <h2>Sensor Readings</h2>
+        <div id="reading-list">
+            <!-- Readings will be dynamically added here -->
+        </div>
+        <button onclick="downloadFile()">Download Readings</button>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Sensor Dashboard | All Rights Reserved</p>
+    </footer>
+
+    <!-- JavaScript for Real-Time Updates -->
+    <script>
+        const readingList = document.getElementById("reading-list");
+        const saveButton = document.getElementById("save-readings");
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data != null && data.temperature != "N/A" && data.humidity != "N/A") {
+                        const timestamp = new Date().toLocaleTimeString();
+                        const reading = `
+                            <div class="reading-item">
+                                <p><strong>Time:</strong> ${timestamp}</p>
+                                <p><strong>Temperature:</strong> ${data.temperature} °C</p>
+                                <p><strong>Humidity:</strong> ${data.humidity} %</p>
+                            </div>`;
+                        // Add new reading at the top of the list
+                        readingList.insertAdjacentHTML("afterbegin", reading);
+                    }
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+        // Fetch data every 2 seconds
+        setInterval(fetchData, 2000);
+
+        function downloadFile() {
+            window.location.href = '/download';
+        }
+    </script>
+</body>
+
+</html>
